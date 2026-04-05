@@ -13,20 +13,34 @@ Pod::Spec.new do |s|
   s.module_name = 'swiftCmarkPod'
 
   # ==============================
-  # 万能关键：不写 static_framework
-  # 不拆 subspec
-  # 全部源码合并编译
+  # 核心：不拆、不指定静态/动态
   # ==============================
-
   s.source_files = 'src/**/*.{h,c,inc}', 'extensions/**/*.{h,c,inc}'
   s.public_header_files = 'src/include/*.h', 'extensions/include/*.h'
-  s.preserve_paths = 'src/**/*', 'extensions/**/*'
+
+  # ==============================
+  # 🔴 绝杀配置1：USER_HEADER_SEARCH_PATHS
+  # 🔴 绝杀配置2：SWIFT_INCLUDE_PATHS
+  # 这两个是强制让 Clang 看到头文件！
+  # ==============================
+  s.user_target_xcconfig = {
+    "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src/include $(PODS_TARGET_SRCROOT)/src $(PODS_TARGET_SRCROOT)/extensions/include",
+    "USER_HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src/include $(PODS_TARGET_SRCROOT)/src $(PODS_TARGET_SRCROOT)/extensions/include",
+    "SWIFT_INCLUDE_PATHS" => "$(PODS_TARGET_SRCROOT)/src/include $(PODS_TARGET_SRCROOT)/extensions/include"
+  }
 
   s.pod_target_xcconfig = {
     "DEFINES_MODULE" => "YES",
     "CLANG_ENABLE_MODULES" => "YES",
     "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src/include $(PODS_TARGET_SRCROOT)/src $(PODS_TARGET_SRCROOT)/extensions/include",
+    "USER_HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src/include $(PODS_TARGET_SRCROOT)/src $(PODS_TARGET_SRCROOT)/extensions/include",
     "GCC_PREPROCESSOR_DEFINITIONS" => "CMARK_GFM=1",
-    "WARNING_CFLAGS" => "-Wno-strict-prototypes" # 屏蔽C语言旧语法警告
+    "WARNING_CFLAGS" => "-Wno-strict-prototypes -Wno-incomplete-umbrella"
   }
+
+  # ==============================
+  # 🔴 绝杀配置3：requires_arc 关闭
+  # C 语言文件必须关闭 ARC
+  # ==============================
+  s.requires_arc = false
 end
