@@ -7,50 +7,26 @@ Pod::Spec.new do |s|
   s.license          = { :type => 'BSD-2-Clause', :file => 'COPYING' }
   s.author           = { 'GIKICoder' => 'https://github.com/GIKICoder' }
 
-  s.source           = { 
-    :git => 'https://github.com/taojeff/swiftCmarkPod.git', 
-    :tag => s.version.to_s 
-  }
+  s.source           = { :git => 'https://github.com/taojeff/swiftCmarkPod.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '12.0'
   s.module_name = 'swiftCmarkPod'
 
-  # ✅ 关键：不写 static_framework = true
-  # ✅ 保持动态库，和你的主项目兼容
+  # ==============================
+  # 万能关键：不写 static_framework
+  # 不拆 subspec
+  # 全部源码合并编译
+  # ==============================
 
-  s.default_subspecs = 'cmark_gfm', 'cmark_gfm_extensions'
+  s.source_files = 'src/**/*.{h,c,inc}', 'extensions/**/*.{h,c,inc}'
+  s.public_header_files = 'src/include/*.h', 'extensions/include/*.h'
+  s.preserve_paths = 'src/**/*', 'extensions/**/*'
 
-  # ==========================
-  # 核心模块
-  # ==========================
-  s.subspec 'cmark_gfm' do |ss|
-    ss.source_files = 'src/**/*.{h,c,inc}'
-    ss.preserve_paths = 'src/**/*'
-    ss.public_header_files = 'src/include/*.h'
-
-    ss.pod_target_xcconfig = {
-      "DEFINES_MODULE" => "YES",
-      "CLANG_ENABLE_MODULES" => "YES",
-      "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src/include $(PODS_TARGET_SRCROOT)/src",
-      "GCC_PREPROCESSOR_DEFINITIONS" => "CMARK_GFM=1"
-    }
-  end
-
-  # ==========================
-  # 扩展模块（真正修复点在这里）
-  # ==========================
-  s.subspec 'cmark_gfm_extensions' do |ss|
-    ss.dependency 'swiftCmarkPod/cmark_gfm'
-
-    ss.source_files = 'extensions/**/*.{h,c,inc}'
-    ss.preserve_paths = 'extensions/**/*'
-    ss.public_header_files = 'extensions/include/*.h'
-
-    # ✅ 只需要补全 HEADER_SEARCH_PATHS
-    ss.pod_target_xcconfig = {
-      "DEFINES_MODULE" => "YES",
-      "CLANG_ENABLE_MODULES" => "YES",
-      "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src/include $(PODS_TARGET_SRCROOT)/src $(PODS_TARGET_SRCROOT)/extensions/include"
-    }
-  end
+  s.pod_target_xcconfig = {
+    "DEFINES_MODULE" => "YES",
+    "CLANG_ENABLE_MODULES" => "YES",
+    "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src/include $(PODS_TARGET_SRCROOT)/src $(PODS_TARGET_SRCROOT)/extensions/include",
+    "GCC_PREPROCESSOR_DEFINITIONS" => "CMARK_GFM=1",
+    "WARNING_CFLAGS" => "-Wno-strict-prototypes" # 屏蔽C语言旧语法警告
+  }
 end
