@@ -1,10 +1,11 @@
 Pod::Spec.new do |s|
   s.name             = 'swiftCmarkPod'
-  s.version          = '0.29.1'
-  s.summary          = 'cmark-gfm for Swift'
+  s.version          = '0.29.1.1'
+  s.summary          = 'A CocoaPods wrapper for the cmark-gfm library.'
+  s.description      = 'This pod provides the cmark-gfm library, including both the core parser and GFM extensions, for use in iOS, macOS, and other Apple platforms.'
   s.homepage         = 'https://github.com/taojeff/swiftCmarkPod'
   s.license          = { :type => 'BSD-2-Clause', :file => 'COPYING' }
-  s.author           = { 'GIKICoder' => 'giki.biu@gmail.com' }
+  s.author           = { 'GIKICoder' => 'https://github.com/GIKICoder' }
   s.source           = { :git => 'https://github.com/taojeff/swiftCmarkPod.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '12.0'
@@ -12,28 +13,31 @@ Pod::Spec.new do |s|
 
   s.default_subspecs = 'cmark_gfm', 'cmark_gfm_extensions'
 
+  # 核心模块
   s.subspec 'cmark_gfm' do |ss|
-    ss.source_files = 'src/**/*.{h,c}'
+    ss.source_files = 'src/**/*.{h,c,inc}'  # ✅ 修复：加入 .inc
+    ss.preserve_paths = 'src/**/*'
     ss.public_header_files = 'src/include/*.h'
-    ss.preserve_paths = 'src/include/module.modulemap'
 
-    # ✅ 这两行是你真正缺少的
     ss.pod_target_xcconfig = {
-      'DEFINES_MODULE' => 'YES',
-      'CLANG_ENABLE_MODULES' => 'YES',
-      'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/src/include'
+      "MODULEMAP_FILE" => "$(PODS_TARGET_SRCROOT)/src/include/module.modulemap",
+      "DEFINES_MODULE" => "YES",
+      "CLANG_ENABLE_MODULES" => "YES",
+      "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src/include"
     }
   end
 
+  # 扩展模块
   s.subspec 'cmark_gfm_extensions' do |ss|
     ss.dependency 'swiftCmarkPod/cmark_gfm'
-    ss.source_files = 'extensions/**/*.{h,c}'
+    ss.source_files = 'extensions/**/*.{h,c,inc}'  # ✅ 修复：加入 .inc
+    ss.preserve_paths = 'extensions/**/*'
     ss.public_header_files = 'extensions/include/*.h'
 
     ss.pod_target_xcconfig = {
-      'DEFINES_MODULE' => 'YES',
-      'CLANG_ENABLE_MODULES' => 'YES',
-      'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/extensions/include'
+      "DEFINES_MODULE" => "YES",
+      "CLANG_ENABLE_MODULES" => "YES",
+      "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/extensions/include"
     }
   end
 end
