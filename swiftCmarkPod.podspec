@@ -3,10 +3,10 @@ Pod::Spec.new do |s|
   s.version          = '0.29.1.1'
   s.summary          = 'A CocoaPods wrapper for the cmark-gfm library.'
   s.description      = 'This pod provides the cmark-gfm library, including both the core parser and GFM extensions, for use in iOS, macOS, and other Apple platforms.'
-  s.homepage         = 'https://github.com/GIKICoder/swift-cmark'
+  s.homepage         = 'https://github.com/taojeff/swiftCmarkPod'
   s.license          = { :type => 'BSD-2-Clause', :file => 'COPYING' }
   s.author           = { 'GIKICoder' => 'https://github.com/GIKICoder' }
-  s.source           = { :git => 'https://github.com/GIKICoder/swift-cmark.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/taojeff/swiftCmarkPod.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '12.0'
   s.module_name = 'swiftCmarkPod'
